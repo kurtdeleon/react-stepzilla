@@ -50,6 +50,9 @@ function (_Component) {
     };
     _this.hidden = {
       display: 'none'
+    };
+    _this.noborder = {
+      border: 'none'
     }; // if user did not give a custom nextTextOnFinalActionStep, the nextButtonText becomes the default
 
     _this.nextTextOnFinalActionStep = _this.props.nextTextOnFinalActionStep ? _this.props.nextTextOnFinalActionStep : _this.props.nextButtonText;
@@ -393,6 +396,14 @@ function (_Component) {
         className: "footer-buttons"
       }, _react.default.createElement("button", {
         type: "button",
+        style: this.noborder,
+        className: "ant-btn",
+        onClick: function onClick() {
+          props.close();
+        },
+        id: "cancel-button"
+      }, "Cancel"), _react.default.createElement("button", {
+        type: "button",
         style: showPreviousBtn ? {} : this.hidden,
         className: props.backButtonCls,
         onClick: function onClick() {
@@ -424,9 +435,9 @@ StepZilla.defaultProps = {
   preventEnterSubmission: false,
   startAtStep: 0,
   nextButtonText: 'Next',
-  nextButtonCls: 'btn btn-prev btn-primary btn-lg pull-right',
-  backButtonText: 'Previous',
-  backButtonCls: 'btn btn-next btn-primary btn-lg pull-left',
+  nextButtonCls: 'ant-btn ant-btn-primary',
+  backButtonText: 'Back',
+  backButtonCls: 'ant-btn',
   hocValidationAppliedTo: []
 };
 StepZilla.propTypes = {
