@@ -114,6 +114,10 @@ function (_Component) {
 
       if (currentStep === 0) {
         showPreviousBtn = false;
+      }
+
+      if (currentStep === this.props.steps.length - 3) {
+        nextStepText = 'Find Slots';
       } // second to last step change next btn text if supplied as props
 
 

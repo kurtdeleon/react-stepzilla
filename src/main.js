@@ -75,6 +75,10 @@ export default class StepZilla extends Component {
       showPreviousBtn = false;
     }
 
+    if (currentStep === this.props.steps.length - 3) {
+      nextStepText = 'Find Slots';
+    }
+
     // second to last step change next btn text if supplied as props
     if (currentStep === this.props.steps.length - 2) {
       nextStepText = this.props.nextTextOnFinalActionStep || nextStepText;
