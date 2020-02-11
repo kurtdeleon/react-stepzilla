@@ -66,6 +66,8 @@ export default class StepZilla extends Component {
     // first set default values
     let showPreviousBtn = true;
     let showNextBtn = true;
+    let showCancelBtn = true; // FRIARTUCK MODIFICATION
+    let showCloseBtn = false;
     let nextStepText = this.props.nextButtonText;
 
     // first step hide previous btn
@@ -76,17 +78,23 @@ export default class StepZilla extends Component {
     // second to last step change next btn text if supplied as props
     if (currentStep === this.props.steps.length - 2) {
       nextStepText = this.props.nextTextOnFinalActionStep || nextStepText;
+      showNextBtn = false;
     }
 
     // last step hide next btn, hide previous btn if supplied as props
+    // FRIARTUCK MODIFICATION: Hide Next button on scheduling
     if (currentStep >= this.props.steps.length - 1) {
+      showCancelBtn = false;
       showNextBtn = false;
+      showCloseBtn = true;
       showPreviousBtn = this.props.prevBtnOnLastStep === false ? false : true;
     }
 
     return {
       showPreviousBtn,
       showNextBtn,
+      showCancelBtn, // FRIARTUCK MODIFICATION
+      showCloseBtn,
       nextStepText
     };
   }
@@ -313,6 +321,8 @@ export default class StepZilla extends Component {
     const {
       nextStepText,
       showNextBtn,
+      showCancelBtn, // FRIARTUCK MODIFICATION,
+      showCloseBtn,
       showPreviousBtn
     } = this.getPrevNextBtnLayout(this.state.compState);
 
@@ -354,7 +364,7 @@ export default class StepZilla extends Component {
         >
           <button
             type="button"
-            style={this.noborder}
+            style={showCancelBtn ? this.noborder : this.hidden}
             className="ant-btn"
             onClick={() => {
               props.close();
@@ -384,6 +394,17 @@ export default class StepZilla extends Component {
             id="next-button"
           >
             {nextStepText}
+          </button>
+          <button
+            type="button"
+            style={showCloseBtn ? {} : this.hidden}
+            className="ant-btn ant-btn-primary"
+            onClick={() => {
+              props.forceClose();
+            }}
+            id="close-button"
+          >
+            Confirm
           </button>
         </div>
       </div>

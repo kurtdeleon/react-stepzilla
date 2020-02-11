@@ -107,6 +107,9 @@ function (_Component) {
       // first set default values
       var showPreviousBtn = true;
       var showNextBtn = true;
+      var showCancelBtn = true; // FRIARTUCK MODIFICATION
+
+      var showCloseBtn = false;
       var nextStepText = this.props.nextButtonText; // first step hide previous btn
 
       if (currentStep === 0) {
@@ -116,17 +119,24 @@ function (_Component) {
 
       if (currentStep === this.props.steps.length - 2) {
         nextStepText = this.props.nextTextOnFinalActionStep || nextStepText;
+        showNextBtn = false;
       } // last step hide next btn, hide previous btn if supplied as props
+      // FRIARTUCK MODIFICATION: Hide Next button on scheduling
 
 
       if (currentStep >= this.props.steps.length - 1) {
+        showCancelBtn = false;
         showNextBtn = false;
+        showCloseBtn = true;
         showPreviousBtn = this.props.prevBtnOnLastStep === false ? false : true;
       }
 
       return {
         showPreviousBtn: showPreviousBtn,
         showNextBtn: showNextBtn,
+        showCancelBtn: showCancelBtn,
+        // FRIARTUCK MODIFICATION
+        showCloseBtn: showCloseBtn,
         nextStepText: nextStepText
       };
     } // which step are we in?
@@ -367,6 +377,8 @@ function (_Component) {
       var _this$getPrevNextBtnL = this.getPrevNextBtnLayout(this.state.compState),
           nextStepText = _this$getPrevNextBtnL.nextStepText,
           showNextBtn = _this$getPrevNextBtnL.showNextBtn,
+          showCancelBtn = _this$getPrevNextBtnL.showCancelBtn,
+          showCloseBtn = _this$getPrevNextBtnL.showCloseBtn,
           showPreviousBtn = _this$getPrevNextBtnL.showPreviousBtn; // clone the step component dynamically and tag it as activeComponent so we can validate it on next. also bind the jumpToStep piping method
 
 
@@ -396,7 +408,7 @@ function (_Component) {
         className: "footer-buttons"
       }, _react.default.createElement("button", {
         type: "button",
-        style: this.noborder,
+        style: showCancelBtn ? this.noborder : this.hidden,
         className: "ant-btn",
         onClick: function onClick() {
           props.close();
@@ -418,7 +430,15 @@ function (_Component) {
           _this6.next();
         },
         id: "next-button"
-      }, nextStepText)));
+      }, nextStepText), _react.default.createElement("button", {
+        type: "button",
+        style: showCloseBtn ? {} : this.hidden,
+        className: "ant-btn ant-btn-primary",
+        onClick: function onClick() {
+          props.forceClose();
+        },
+        id: "close-button"
+      }, "Confirm")));
     }
   }]);
 
