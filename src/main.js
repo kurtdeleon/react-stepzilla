@@ -243,9 +243,39 @@ export default class StepZilla extends Component {
   }
 
   // move behind via previous button
+  // previous() {
+  //   if (this.state.compState > 0) {
+  //     this.setNavState(this.state.compState - 1);
+  //   }
+  // }
+
+  // move behind via previous button
   previous() {
     if (this.state.compState > 0) {
-      this.setNavState(this.state.compState - 1);
+      this.abstractStepMoveAllowedToPromise()
+        .then((proceed = true) => {
+          // validation was a success (promise or sync validation). In it was a Promise's resolve() then proceed will be undefined,
+          // ... so make it true. Or else 'proceed' will carry the true/false value from sync validation
+          this.updateStepValidationFlag(proceed);
+
+          if (proceed) {
+            this.setNavState(this.state.compState - 1);
+          }
+        })
+        .catch(e => {
+          if (e) {
+            // CatchRethrowing: as we wrap StepMoveAllowed() to resolve as a Promise, the then() is invoked and the next React Component is loaded.
+            // ... during the render, if there are JS errors thrown (e.g. ReferenceError) it gets swallowed by the Promise library and comes in here (catch)
+            // ... so we need to rethrow it outside the execution stack so it behaves like a notmal JS error (i.e. halts and prints to console)
+            //
+            setTimeout(() => {
+              throw e;
+            });
+          }
+
+          // Promise based validation was a fail (i.e reject())
+          this.updateStepValidationFlag(false);
+        });
     }
   }
 

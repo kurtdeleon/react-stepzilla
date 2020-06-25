@@ -287,12 +287,43 @@ function (_Component) {
         _this4.updateStepValidationFlag(false);
       });
     } // move behind via previous button
+    // previous() {
+    //   if (this.state.compState > 0) {
+    //     this.setNavState(this.state.compState - 1);
+    //   }
+    // }
+    // move behind via previous button
 
   }, {
     key: "previous",
     value: function previous() {
+      var _this5 = this;
+
       if (this.state.compState > 0) {
-        this.setNavState(this.state.compState - 1);
+        this.abstractStepMoveAllowedToPromise().then(function () {
+          var proceed = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+          // validation was a success (promise or sync validation). In it was a Promise's resolve() then proceed will be undefined,
+          // ... so make it true. Or else 'proceed' will carry the true/false value from sync validation
+          _this5.updateStepValidationFlag(proceed);
+
+          if (proceed) {
+            _this5.setNavState(_this5.state.compState - 1);
+          }
+        }).catch(function (e) {
+          if (e) {
+            // CatchRethrowing: as we wrap StepMoveAllowed() to resolve as a Promise, the then() is invoked and the next React Component is loaded.
+            // ... during the render, if there are JS errors thrown (e.g. ReferenceError) it gets swallowed by the Promise library and comes in here (catch)
+            // ... so we need to rethrow it outside the execution stack so it behaves like a notmal JS error (i.e. halts and prints to console)
+            //
+            setTimeout(function () {
+              throw e;
+            });
+          } // Promise based validation was a fail (i.e reject())
+
+
+          _this5.updateStepValidationFlag(false);
+        });
       }
     } // update step's validation flag
 
@@ -357,24 +388,24 @@ function (_Component) {
   }, {
     key: "renderSteps",
     value: function renderSteps() {
-      var _this5 = this;
+      var _this6 = this;
 
       return this.props.steps.map(function (s, i) {
         return _react.default.createElement("li", {
-          className: _this5.getClassName('progtrckr', i),
+          className: _this6.getClassName('progtrckr', i),
           onClick: function onClick(evt) {
-            _this5.jumpToStep(evt);
+            _this6.jumpToStep(evt);
           },
           key: i,
           value: i
-        }, _react.default.createElement("em", null, i + 1), _react.default.createElement("span", null, _this5.props.steps[i].name));
+        }, _react.default.createElement("em", null, i + 1), _react.default.createElement("span", null, _this6.props.steps[i].name));
       });
     } // main render of stepzilla container
 
   }, {
     key: "render",
     value: function render() {
-      var _this6 = this;
+      var _this7 = this;
 
       var props = this.props;
 
@@ -388,7 +419,7 @@ function (_Component) {
 
       var cloneExtensions = {
         jumpToStep: function jumpToStep(t) {
-          _this6.jumpToStep(t);
+          _this7.jumpToStep(t);
         }
       };
       var componentPointer = this.props.steps[this.state.compState].component; // can only update refs if its a regular React component (not a pure component), so lets check that
@@ -403,7 +434,7 @@ function (_Component) {
       return _react.default.createElement("div", {
         className: "multi-step",
         onKeyDown: function onKeyDown(evt) {
-          _this6.handleKeyDown(evt);
+          _this7.handleKeyDown(evt);
         }
       }, this.props.showSteps ? _react.default.createElement("ol", {
         className: "progtrckr"
@@ -423,7 +454,7 @@ function (_Component) {
         style: showPreviousBtn ? {} : this.hidden,
         className: props.backButtonCls,
         onClick: function onClick() {
-          _this6.previous();
+          _this7.previous();
         },
         id: "prev-button"
       }, this.props.backButtonText), _react.default.createElement("button", {
@@ -431,7 +462,7 @@ function (_Component) {
         style: showNextBtn ? {} : this.hidden,
         className: props.nextButtonCls,
         onClick: function onClick() {
-          _this6.next();
+          _this7.next();
         },
         id: "next-button"
       }, nextStepText), _react.default.createElement("button", {
